@@ -24,8 +24,10 @@ if [ -z "$CUSTOM_PACKAGES" ]; then
 else
   # ============= 同步第三方插件库==============
   # 同步第三方软件仓库run/ipk
-  echo "🔄 正在同步第三方软件仓库 Cloning run file repo..."
+  echo "🔄 正在同步第三方软件仓库 Downloading ipk..."
   wget -r -l1 -np -nd -A.ipk https://dllkids.xyz/packages/x86_64/ -P /tmp/store-run-repo
+  echo "第三方仓库文件列表："
+  ls -lh /tmp/store-run-repo
 
   # 拷贝 run/x86 下所有 run 文件和ipk文件 到 extra-packages 目录
   mkdir -p /home/build/immortalwrt/extra-packages
