@@ -58,8 +58,10 @@ PACKAGES="$PACKAGES luci-app-openclash"
 PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn"
 # 静态文件服务器dufs(推荐)
 PACKAGES="$PACKAGES luci-i18n-dufs-zh-cn"
-# easytier
-PACKAGES="$PACKAGES luci-app-easytier	luci-i18n-easytier-zh-cn"
+# 自定义工具
+PACKAGES="$PACKAGES luci-app-easytier luci-i18n-easytier-zh-cn"
+PACKAGES="$PACKAGES luci-app-frpc luci-i18n-frpc-zh-cn"
+PACKAGES="$PACKAGES luci-app-wol luci-i18n-wol-zh-cn"
 # ======== shell/custom-packages.sh =======
 # 合并imm仓库以外的第三方插件
 PACKAGES="$PACKAGES $CUSTOM_PACKAGES"
