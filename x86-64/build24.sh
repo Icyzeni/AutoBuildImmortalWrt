@@ -40,8 +40,9 @@ cat /home/build/immortalwrt/files/etc/config/pppoe-settings
 if [ -z "$CUSTOM_PACKAGES" ]; then
   echo "⚪️ 未选择 任何第三方软件包"
 else
-  # ============= 同步第三方插件库==============
-  # 同步第三方软件仓库run/ipk
+  # 已在repositories.conf中添加第三方源，无需单独下载
+  echo "✅ 已添加第三方软件源: src/gz kenzo8_packages https://op.dllkids.xyz/packages/x86_64"
+  echo "✅ 第三方软件包: $CUSTOM_PACKAGES"
 fi
 
 # 输出调试信息
