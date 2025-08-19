@@ -6,6 +6,24 @@ LOGFILE="/tmp/uci-defaults-log.txt"
 echo "Starting 99-custom.sh at $(date)" >> $LOGFILE
 echo "编译固件大小为: $PROFILE MB"
 
+echo "Update repositories.conf with custom package source"
+cat << EOF > /home/build/immortalwrt/repositories.conf
+## Remote package repositories
+src/gz immortalwrt_core https://downloads.immortalwrt.org/releases/24.10.2/targets/x86/64/packages
+src/gz immortalwrt_base https://downloads.immortalwrt.org/releases/24.10.2/packages/x86_64/base
+src/gz immortalwrt_kmods https://downloads.immortalwrt.org/releases/24.10.2/targets/x86/64/kmods/6.6.93-1-c69323a377952557bd871e9f3c2e82ae
+src/gz immortalwrt_luci https://downloads.immortalwrt.org/releases/24.10.2/packages/x86_64/luci
+src/gz immortalwrt_packages https://downloads.immortalwrt.org/releases/24.10.2/packages/x86_64/packages
+src/gz immortalwrt_routing https://downloads.immortalwrt.org/releases/24.10.2/packages/x86_64/routing
+src/gz immortalwrt_telephony https://downloads.immortalwrt.org/releases/24.10.2/packages/x86_64/telephony
+src/gz kenzo8_packages https://op.dllkids.xyz/packages/x86_64
+
+## This is the local package repository, do not remove!
+src imagebuilder file:packages
+
+# option check_signature
+EOF
+
 echo "Create pppoe-settings"
 mkdir -p  /home/build/immortalwrt/files/etc/config
 
@@ -24,20 +42,6 @@ if [ -z "$CUSTOM_PACKAGES" ]; then
 else
   # ============= 同步第三方插件库==============
   # 同步第三方软件仓库run/ipk
-  echo "🔄 正在同步第三方软件仓库 Downloading ipk..."
-  wget -r -l1 -np -nd -A.ipk https://dllkids.xyz/packages/x86_64/ -P /tmp/store-run-repo
-  echo "第三方仓库文件列表："
-  ls -lh /tmp/store-run-repo
-
-  # 拷贝 run/x86 下所有 run 文件和ipk文件 到 extra-packages 目录
-  mkdir -p /home/build/immortalwrt/extra-packages
-  cp -r /tmp/store-run-repo/run/x86/* /home/build/immortalwrt/extra-packages/
-
-  echo "✅ Run files copied to extra-packages:"
-  ls -lh /home/build/immortalwrt/extra-packages/*.run
-  # 解压并拷贝ipk到packages目录
-  sh shell/prepare-packages.sh
-  ls -lah /home/build/immortalwrt/packages/
 fi
 
 # 输出调试信息
