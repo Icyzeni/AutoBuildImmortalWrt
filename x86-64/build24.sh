@@ -38,7 +38,7 @@ else
   # sh shell/prepare-packages.sh
   # ls -lah /home/build/immortalwrt/packages/
   # 使用专用下载脚本
-  sh shell/get-packages.sh
+  sh shell/get-packages.sh "$CUSTOM_PACKAGES"
 fi
 
 # 输出调试信息
