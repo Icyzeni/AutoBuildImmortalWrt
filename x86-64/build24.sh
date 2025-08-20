@@ -6,24 +6,6 @@ LOGFILE="/tmp/uci-defaults-log.txt"
 echo "Starting 99-custom.sh at $(date)" >> $LOGFILE
 echo "编译固件大小为: $PROFILE MB"
 
-echo "Update repositories.conf with custom package source"
-cat << EOF > /home/build/immortalwrt/repositories.conf
-## Remote package repositories
-src/gz immortalwrt_core https://downloads.immortalwrt.org/releases/24.10.2/targets/x86/64/packages
-src/gz immortalwrt_base https://downloads.immortalwrt.org/releases/24.10.2/packages/x86_64/base
-src/gz immortalwrt_kmods https://downloads.immortalwrt.org/releases/24.10.2/targets/x86/64/kmods/6.6.93-1-c69323a377952557bd871e9f3c2e82ae
-src/gz immortalwrt_luci https://downloads.immortalwrt.org/releases/24.10.2/packages/x86_64/luci
-src/gz immortalwrt_packages https://downloads.immortalwrt.org/releases/24.10.2/packages/x86_64/packages
-src/gz immortalwrt_routing https://downloads.immortalwrt.org/releases/24.10.2/packages/x86_64/routing
-src/gz immortalwrt_telephony https://downloads.immortalwrt.org/releases/24.10.2/packages/x86_64/telephony
-src/gz kenzo8_packages https://op.dllkids.xyz/packages/x86_64
-
-## This is the local package repository, do not remove!
-src imagebuilder file:packages
-
-# option check_signature
-EOF
-
 echo "Create pppoe-settings"
 mkdir -p  /home/build/immortalwrt/files/etc/config
 
@@ -40,9 +22,23 @@ cat /home/build/immortalwrt/files/etc/config/pppoe-settings
 if [ -z "$CUSTOM_PACKAGES" ]; then
   echo "⚪️ 未选择 任何第三方软件包"
 else
-  # 已在repositories.conf中添加第三方源，无需单独下载
-  echo "✅ 已添加第三方软件源: src/gz kenzo8_packages https://op.dllkids.xyz/packages/x86_64"
-  echo "✅ 第三方软件包: $CUSTOM_PACKAGES"
+  # 不用这个库
+  # ============= 同步第三方插件库==============
+  # 同步第三方软件仓库run/ipk
+  # echo "🔄 正在同步第三方软件仓库 Cloning run file repo..."
+  # git clone --depth=1 https://github.com/wukongdaily/store.git /tmp/store-run-repo
+
+  # 拷贝 run/x86 下所有 run 文件和ipk文件 到 extra-packages 目录
+  # mkdir -p /home/build/immortalwrt/extra-packages
+  # cp -r /tmp/store-run-repo/run/x86/* /home/build/immortalwrt/extra-packages/
+
+  # echo "✅ Run files copied to extra-packages:"
+  # ls -lh /home/build/immortalwrt/extra-packages/*.run
+  # 解压并拷贝ipk到packages目录
+  # sh shell/prepare-packages.sh
+  # ls -lah /home/build/immortalwrt/packages/
+  # 使用专用下载脚本
+  sh shell/get-packages.sh
 fi
 
 # 输出调试信息
@@ -52,21 +48,23 @@ echo "$(date '+%Y-%m-%d %H:%M:%S') - 开始构建固件..."
 # 定义所需安装的包列表 下列插件你都可以自行删减
 PACKAGES=""
 PACKAGES="$PACKAGES curl"
-PACKAGES="$PACKAGES luci-app-diskman"
-PACKAGES="$PACKAGES luci-app-firewall"
+PACKAGES="$PACKAGES luci-i18n-diskman-zh-cn"
+PACKAGES="$PACKAGES luci-i18n-firewall-zh-cn"
 PACKAGES="$PACKAGES luci-theme-argon"
 PACKAGES="$PACKAGES luci-app-argon-config"
+PACKAGES="$PACKAGES luci-i18n-argon-config-zh-cn"
 #24.10
-PACKAGES="$PACKAGES luci-app-package-manager"
-PACKAGES="$PACKAGES luci-app-ttyd"
+PACKAGES="$PACKAGES luci-i18n-package-manager-zh-cn"
+PACKAGES="$PACKAGES luci-i18n-ttyd-zh-cn"
 PACKAGES="$PACKAGES luci-app-openclash"
 # 文件管理器
-PACKAGES="$PACKAGES luci-app-filemanager"
+PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn"
 # 静态文件服务器dufs(推荐)
-PACKAGES="$PACKAGES luci-app-dufs"
+PACKAGES="$PACKAGES luci-i18n-dufs-zh-cn"
 # 自定义工具
-PACKAGES="$PACKAGES luci-app-frpc"
-PACKAGES="$PACKAGES luci-app-wol"
+PACKAGES="$PACKAGES luci-app-easytier luci-i18n-easytier-zh-cn"
+PACKAGES="$PACKAGES luci-app-frpc luci-i18n-frpc-zh-cn"
+PACKAGES="$PACKAGES luci-app-wol luci-i18n-wol-zh-cn"
 # ======== shell/custom-packages.sh =======
 # 合并imm仓库以外的第三方插件
 PACKAGES="$PACKAGES $CUSTOM_PACKAGES"
